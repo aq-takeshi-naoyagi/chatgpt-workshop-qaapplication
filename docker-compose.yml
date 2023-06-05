@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: chat_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
+  web:
+    image: python:3.8
+    volumes:
+      - .:/code
+    working_dir: /code
+    command: bash -c "pip install -r requirements.txt && python app.py"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data: {}

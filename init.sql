@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS chat_db;
+USE chat_db;
+
+CREATE TABLE IF NOT EXISTS chat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_message TEXT NOT NULL,
+    bot_response TEXT NOT NULL
+);
