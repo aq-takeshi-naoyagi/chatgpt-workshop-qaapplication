@@ -10,8 +10,6 @@ app = Flask(__name__)
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-messages = [{"role": "system", "content": "あなたは助けになるアシスタントです。"}]
-
 @app.route('/chat', methods=['GET'])
 def get_chat():
     conn = mysql.connector.connect(user='user', password='password', host='db', database='chat_db')
@@ -29,15 +27,14 @@ def get_chat():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form['message']
-    messages.append({'role': 'user', 'content': user_message})
+    single_message = [{'role': 'user', 'content': user_message}]
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=messages
+        messages=single_message
     )
 
     bot_message = response.choices[0].message['content']
-    messages.append({'role': 'assistant', 'content': bot_message})
 
     conn = mysql.connector.connect(user='user', password='password', host='db', database='chat_db')
     cursor = conn.cursor()
@@ -56,11 +53,6 @@ def clear_chat():
     conn.commit()
     cursor.close()
     conn.close()
-
-    # リセットmessages
-    messages.clear()
-    # 再度、初期のシステムメッセージを追加
-    messages.append({"role": "system", "content": "あなたは助けになるアシスタントです。"})
 
     return redirect("/chat")
 
